@@ -1,0 +1,36 @@
+<?php
+/**
+ * @file
+ * module implements
+ */
+
+/**
+ * response type const
+ */
+define('WEIXIN_ROUTER_TYPE_TEXT', 'text');
+define('WEIXIN_ROUTER_TYPE_EVENT', 'event');
+
+/**
+ * implements hook_menu()
+ */
+function weixin_router_menu() {
+  $items = array();
+  $items['weixin/router/dispatch'] = array(
+    'title' => 'weixin router',
+    'page callback' => 'weixin_router_dispatch',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+/**
+ * weixin command dispatch
+ */
+function weixin_router_dispatch() {
+  if(isset($_GET['echostr'])) {
+    echo $_GET['echostr'];
+    exit();
+  }
+  WeixinRouter::load()->dispatch();
+}

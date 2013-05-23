@@ -1,0 +1,22 @@
+<?php
+
+/**
+ * @file
+ * weixin test actions
+ */
+
+/**
+ * implements hook_weixin_router_actions()
+ */
+function weixin_test_actions_weixin_router_actions() {
+  return array(
+    'hello' => array(
+      'title' => 'hello action',
+      'class' => 'HelloAction',
+    ),
+  );
+}
+
+function weixin_test_actions_hello() {
+  return 'hello';
+}

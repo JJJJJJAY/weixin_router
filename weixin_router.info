@@ -1,0 +1,12 @@
+name = WeiXin Router
+description = "The router for dispatch weixin command"
+package = Vantools
+core = 7.x
+version = 7.x-1.1-alpha
+
+files[] = tests/weixin_router.test
+files[] = inc/router.inc
+files[] = inc/response.inc
+files[] = inc/action.inc
+files[] = inc/request.inc
+

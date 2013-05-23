@@ -1,0 +1,9 @@
+name = weixin router example
+description = "The example actions for weixin router"
+version = 7.x-1.0-alpha
+core = 7.x
+
+dependencies[] = weixin_router
+
+files[] = weixin_test_actions.module
+files[] = actions.inc

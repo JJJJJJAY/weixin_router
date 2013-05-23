@@ -1,0 +1,165 @@
+<?php
+
+/**
+ * @file
+ * Tests for weixin router.
+ */
+
+class WeixinRouterUnitTestCase extends DrupalUnitTestCase {
+  public static function getInfo() {
+    return array(
+      'name' => 'Weixin router unittest',
+      'description' => 'Ensure router dispatch work ok.',
+      'group' => 'Weixin',
+    );
+  }
+
+  public function setUp() {
+    drupal_load('module', 'ctools');
+    drupal_load('module', 'weixin_router');
+    drupal_load('module', 'weixin_test_actions');
+    // parent::setUp(array('weixin_router', 'devel', 'weixin_test_actions'));
+    parent::setUp();
+  }
+
+  // post a request with any content and return router dispatch failure message
+  //public function testRouterDispatchFailure() {
+  //}
+
+  // test WeixinTextResponse->build
+  public function testTextResponseBuild() {
+    ctools_include('response', 'weixin_router', 'inc');
+    $response = new WeixinTextResponse();
+    $toUserName = 'wxb';
+    $fromUserName = 'llp';
+    $content = 'test message';
+
+    $xmlTpl = "<xml>
+<ToUserName><![CDATA[%s]]></ToUserName>
+<FromUserName><![CDATA[%s]]></FromUserName>
+<CreateTime>%s</CreateTime>
+<MsgType><![CDATA[text]]></MsgType>
+<Content><![CDATA[%s]]></Content>
+<FuncFlag>0</FuncFlag>
+</xml>";
+    $str = sprintf($xmlTpl,
+            $toUserName,
+            $fromUserName,
+            REQUEST_TIME,
+            $content
+    );
+
+    $response->toUserName = $toUserName;
+    $response->fromUserName = $fromUserName;
+    $response->content = $content;
+    $response->build();
+    $body = $response->getBody();
+
+    $this->assertEqual($str, $body, 'response build test');
+  }
+
+  // base request class test
+  function testWeixinRequest() {
+    ctools_include('request', 'weixin_router', 'inc');
+    ctools_include('router', 'weixin_router', 'inc');
+
+    $xml = '<xml>
+<ToUserName><![CDATA[toUser]]></ToUserName>
+<FromUserName><![CDATA[fromUser]]></FromUserName>
+<CreateTime>1348831860</CreateTime>
+<MsgType><![CDATA[text]]></MsgType>
+<Content><![CDATA[this is a test]]></Content>
+<MsgId>1234567890123456</MsgId>
+</xml>';
+    $request = new WeixinRequest();
+    $request->loadByXml($xml);
+
+    $this->assertEqual($request->getParam('ToUserName'), 'toUser', 'to user name read test');
+    $this->assertEqual($request->getParam('FromUserName'), 'fromUser', 'from user name read test');
+    $this->assertEqual($request->getParam('MsgType'), 'text', 'msgtype read test');
+  }
+
+  // test router get action by event.
+  public function testRouterGetAction() {
+
+    ctools_include('request', 'weixin_router', 'inc');
+    ctools_include('router', 'weixin_router', 'inc');
+    ctools_include('response', 'weixin_router', 'inc');
+    ctools_include('action', 'weixin_router', 'inc');
+
+    $result = weixin_test_actions_hello();
+    $this->assertEqual($result, 'hello', 'test weixin_test_actions module is loaded');
+
+    $router = new WeixinRouter();
+
+    // this is a fix for the UnitCaseTest not support hook invoke
+    ctools_include('actions', 'weixin_test_actions', '/');
+    $router->setActions(weixin_test_actions_weixin_router_actions());
+
+    $xml = '<xml>
+<ToUserName><![CDATA[toUser]]></ToUserName>
+<FromUserName><![CDATA[fromUser]]></FromUserName>
+<CreateTime>1348831860</CreateTime>
+<MsgType><![CDATA[text]]></MsgType>
+<Content><![CDATA[hello]]></Content>
+<MsgId>1234567890123456</MsgId>
+</xml>';
+    $request = new WeixinRequest();
+    $request->loadByXml($xml);
+    $router->setRequest($request);
+
+    $action = $router->getAction();
+    $className = get_class($action);
+    $this->assertEqual($className, 'HelloAction', 'action class is matched');
+
+    $action->execute();
+    $response = $action->getResponse();
+    $body = $response->getBody();
+    $this->assertEqual($body, 'hello fromUser', 'Is response body right');
+  }
+}
+
+class WeixinRouterWebTestCase extends DrupalWebTestCase {
+
+  public static function getInfo() {
+    return array(
+      'name' => 'Weixin router webtest',
+      'description' => 'Ensure router dispatch work ok.',
+      'group' => 'Weixin',
+    );
+  }
+
+  public function setUp() {
+    parent::setUp(array('weixin_router', 'devel', 'weixin_test_actions'));
+  }
+
+  public function testMixedRequestSend() {
+    $xml = '<xml>
+<ToUserName><![CDATA[toUser]]></ToUserName>
+<FromUserName><![CDATA[fromUser]]></FromUserName>
+<CreateTime>1348831860</CreateTime>
+<MsgType><![CDATA[text]]></MsgType>
+<Content><![CDATA[hello]]></Content>
+<MsgId>1234567890123456</MsgId>
+</xml>';
+
+    $curl_options = array();
+    $curl_options[CURLOPT_URL] = url('weixin/router/dispatch', array('absolute' => TRUE));
+    $curl_options[CURLOPT_RETURNTRANSFER] = TRUE;
+    $curl_options[CURLOPT_POST] = TRUE;
+    $curl_options[CURLOPT_POSTFIELDS] = $xml;
+    $curl_options[CURLOPT_HTTPHEADER] = array('Content-Type: text/plain');
+
+    $out = $this->curlExec($curl_options);
+    $out = preg_replace('/<CreateTime>\d+<\/CreateTime>/', '', $out);
+
+    $this->assertEqual($out, '<xml>
+<ToUserName><![CDATA[fromUser]]></ToUserName>
+<FromUserName><![CDATA[toUser]]></FromUserName>
+
+<MsgType><![CDATA[text]]></MsgType>
+<Content><![CDATA[hello fromUser]]></Content>
+<FuncFlag>0</FuncFlag>
+</xml>', 'post and get response by class WeixinTextResponse');
+  }
+}

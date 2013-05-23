@@ -1,0 +1,6 @@
+name = Weixin Wangxb
+description = "my blog weixin api support"
+version = 7.x-1.0-alpha
+core = 7.x
+
+dependencies[] = weixin_router

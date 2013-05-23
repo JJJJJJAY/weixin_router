@@ -1,0 +1,20 @@
+<?php
+
+/**
+ * @file
+ * Weixin actions for my blog
+ */
+
+/**
+ * Implements hook_weixin_router_actions
+ */
+function weixin_wangxb_weixin_router_actions() {
+  $actions = array();
+  $actions['subscribe'] = array(
+    'title' => 'Subscribe',
+    'class' => 'WangxbSubscribeAction',
+    'description' => 'The event fire when user subscribe my weixin.',
+    'type' => WEIXIN_ROUTER_TYPE_EVENT,
+  );
+  return $actions;
+}
