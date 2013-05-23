@@ -115,7 +115,18 @@ class WeixinRouterUnitTestCase extends DrupalUnitTestCase {
     $action->execute();
     $response = $action->getResponse();
     $body = $response->getBody();
-    $this->assertEqual($body, 'hello fromUser', 'Is response body right');
+
+    $out = '<xml>
+<ToUserName><![CDATA[fromUser]]></ToUserName>
+<FromUserName><![CDATA[toUser]]></FromUserName>
+
+<MsgType><![CDATA[text]]></MsgType>
+<Content><![CDATA[hello fromUser]]></Content>
+<FuncFlag>0</FuncFlag>
+</xml>';
+
+    $body = preg_replace('/<CreateTime>\d+<\/CreateTime>/', '', $body);
+    $this->assertEqual($body, $out, 'Is response body right');
   }
 }
 

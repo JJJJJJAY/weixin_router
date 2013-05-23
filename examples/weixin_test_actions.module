@@ -13,6 +13,8 @@ function weixin_test_actions_weixin_router_actions() {
     'hello' => array(
       'title' => 'hello action',
       'class' => 'HelloAction',
+      'description' => 'response body is hello [FromUserName]'
+      'type' => WEIXIN_ROUTER_TEXT_EVENT,
     ),
   );
 }

@@ -16,5 +16,11 @@ function weixin_wangxb_weixin_router_actions() {
     'description' => 'The event fire when user subscribe my weixin.',
     'type' => WEIXIN_ROUTER_TYPE_EVENT,
   );
+  $actions['unsubscribe'] = array(
+    'title' => 'Subscribe',
+    'class' => 'WangxbUnsubscribeAction',
+    'description' => 'The event fire when user subscribe my weixin.',
+    'type' => WEIXIN_ROUTER_TYPE_EVENT,
+  );
   return $actions;
 }
