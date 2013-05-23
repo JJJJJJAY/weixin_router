@@ -96,7 +96,7 @@ class WeixinRouter {
       }
     }
 
-    throw new WeixinException('evert code not exsits');
+    throw new WeixinException('event code not exsits: event code \'' . $event . '\'');
   }
 
   /**

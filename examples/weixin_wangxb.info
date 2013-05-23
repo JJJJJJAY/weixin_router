@@ -4,3 +4,6 @@ version = 7.x-1.0-alpha
 core = 7.x
 
 dependencies[] = weixin_router
+
+files[] = weixin_wangxb.module
+files[] = weixin_wangxb.actions.inc
