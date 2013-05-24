@@ -27,6 +27,7 @@ function weixin_wangxb_weixin_router_actions() {
     'class' => 'WangxbNodeListAction',
     'description' => 'Return node list.',
     'type' => WEIXIN_ROUTER_TYPE_TEXT,
+    'response class' => 'WeixinArticleResponse',
   );
   return $actions;
 }
