@@ -23,9 +23,9 @@ function weixin_wangxb_weixin_router_actions() {
     'type' => WEIXIN_ROUTER_TYPE_EVENT,
   );
   $actions['node'] = array(
-    'title' => 'Node view',
-    'class' => 'WangxbNodeViewAction',
-    'description' => 'Return node view by node title.',
+    'title' => 'Node list',
+    'class' => 'WangxbNodeListAction',
+    'description' => 'Return node list.',
     'type' => WEIXIN_ROUTER_TYPE_TEXT,
   );
   return $actions;
