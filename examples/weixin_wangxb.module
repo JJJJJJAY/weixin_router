@@ -24,3 +24,10 @@ function weixin_wangxb_weixin_router_actions() {
   );
   return $actions;
 }
+
+/**
+ * preprocess alter router, set a default action
+ */
+function weixin_router_alter(&$router) {
+  $router->setDefaultAction(new WangxbDefaultAction(WeixinRequest::requestFromPost()));
+}

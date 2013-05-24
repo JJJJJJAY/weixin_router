@@ -8,7 +8,7 @@
 /**
  * Subscribe action
  */
-class WangxbSubscribeAction extends WeixinAction {
+class WangxbSubscribeAction extends WeixinAction implements WeixinActionInterface {
   public function execute() {
     $response = $this->getResponse();
 
@@ -24,8 +24,13 @@ class WangxbSubscribeAction extends WeixinAction {
 /**
  * Unsubscribe action
  */
-class WangxbUnsubscribeAction extends WeixinAction {
+class WangxbUnsubscribeAction extends WeixinAction implements WeixinActionInterface {
   public function execute() {
     watchdog('weixin', 'user %username unsubscribe your weixin MP.', array('%username' => $fromUserName));
   }
 }
+
+/**
+ * Default action, return command list
+ */
+class WangxbDefaultAction extends WeixinAction implements WeixinActionInterface {}

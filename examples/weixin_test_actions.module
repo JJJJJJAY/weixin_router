@@ -13,10 +13,18 @@ function weixin_test_actions_weixin_router_actions() {
     'hello' => array(
       'title' => 'hello action',
       'class' => 'HelloAction',
-      'description' => 'response body is hello [FromUserName]'
-      'type' => WEIXIN_ROUTER_TEXT_EVENT,
+      'description' => 'response body is hello [FromUserName]',
+      'type' => WEIXIN_ROUTER_TYPE_TEXT,
     ),
   );
+}
+
+/**
+ * Implements hook_weixin_router_alter()
+ * attach some config to current request router
+ */
+function weixin_test_actions_weixin_router_alter(&$router) {
+  $router->setDefaultAction(new DefaultAction(WeixinRequest::requestFromPost()));
 }
 
 function weixin_test_actions_hello() {

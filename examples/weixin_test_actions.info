@@ -6,4 +6,4 @@ core = 7.x
 dependencies[] = weixin_router
 
 files[] = weixin_test_actions.module
-files[] = actions.inc
+files[] = weixin_test_actions.actions.inc

@@ -13,6 +13,7 @@ class WeixinException extends Exception {}
 class WeixinRouter {
   private $_request = NULL;
   private $_actions = array();
+  private $_defaultAction = NULL;
   private static $_instance = NULL;
 
   // request setter
@@ -22,6 +23,16 @@ class WeixinRouter {
   // actions setter
   public function setActions($actions) {
     $this->_actions = $actions;
+  }
+  // default action setter and getter
+  public function setDefaultAction(WeixinActionInterface $action) {
+    $this->_defaultAction = $action;
+  }
+  public function getDefaultAction() {
+    if ($this->_defaultAction) {
+      return $this->_defaultAction;
+    }
+    return FALSE;
   }
 
   // actions getter
@@ -66,19 +77,21 @@ class WeixinRouter {
     $request = $this->_request;
 
     $msgtype = $request->getParam('MsgType');
+    $event = '0';
     switch($msgtype) {
       case 'text':
         $event = $this->_textParseToEvent($request->getParam('Content'));
-        return $this->getActionByEvent($event);
+        break;
       case 'event':
         $event = $request->getParam('Event');
-        return $this->getActionByEvent($event);
+        break;
       case 'image':
       case 'location':
       case 'url':
       default:
         return new WeixinNotFoundAction($request);
     }
+    return $this->getActionByEvent($event);
   }
 
   /**
@@ -95,8 +108,10 @@ class WeixinRouter {
         return new $class($this->_request, $event);
       }
     }
-
-    throw new WeixinException('event code not exsits: event code \'' . $event . '\'');
+    if ($action = $this->getDefaultAction()) {
+      return $action;
+    }
+    throw new WeixinException('event code doesn\'t exist: event code \'' . $event . '\'');
   }
 
   /**

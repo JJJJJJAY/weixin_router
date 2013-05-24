@@ -32,5 +32,7 @@ function weixin_router_dispatch() {
     echo $_GET['echostr'];
     exit();
   }
-  WeixinRouter::load()->dispatch();
+  $router = WeixinRouter::load();
+  drupal_alter('weixin_router', $router);
+  $router->dispatch();
 }

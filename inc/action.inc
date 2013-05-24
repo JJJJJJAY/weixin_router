@@ -5,7 +5,15 @@
  * The action class implements
  */
 
-abstract class WeixinAction {
+interface WeixinActionInterface {
+  /**
+   * execute this action
+   */
+  public function execute();
+}
+
+
+abstract class WeixinAction implements WeixinActionInterface {
   private $_request = NULL;
   private $_response = NULL;
   private $_eventCode = 0;
@@ -20,7 +28,7 @@ abstract class WeixinAction {
   /**
    * execute this action
    */
-  abstract public function execute();
+  public function execute() {}
 
   /**
    * send result by response object
@@ -40,7 +48,7 @@ abstract class WeixinAction {
   }
 }
 
-class WeixinNotFoundAction extends WeixinAction {
+class WeixinNotFoundAction extends WeixinAction implements WeixinActionInterface {
   public function execute() {
     // nothing todo
   }
