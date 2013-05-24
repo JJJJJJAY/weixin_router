@@ -16,13 +16,16 @@ interface WeixinActionInterface {
 abstract class WeixinAction implements WeixinActionInterface {
   private $_request = NULL;
   private $_response = NULL;
-  private $_eventCode = 0;
 
-  function __construct($request, $eventCode = 0) {
+  function __construct($request, $response = NULL) {
     $this->_request = $request;
-    $this->_eventCode = $eventCode;
     // TODO configable response class
-    $this->_response = new WeixinTextResponse();
+    if ($response) {
+      $this->_response = $response;
+    }
+    else {
+      $this->_response = new WeixinTextResponse();
+    }
   }
 
   /**

@@ -105,7 +105,14 @@ class WeixinRouter {
     foreach ($actions as $actionEvent => $action) {
       if ($event == $actionEvent) {
         $class = $action['class'];
-        return new $class($this->_request, $event);
+        // construct response
+        $response = NULL;
+        if (isset($action['response class'])) {
+          $responseClass = $action['response class'];
+          $response = new $responseClass();
+        }
+
+        return new $class($this->_request, $response);
       }
     }
     if ($action = $this->getDefaultAction()) {
