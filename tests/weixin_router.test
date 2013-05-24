@@ -214,7 +214,17 @@ class WeixinWangxbWebTestCase extends DrupalWebTestCase {
   }
 
   public function setUp() {
-    parent::setUp(array('weixin_router', 'weixin_wangxb'));
+    parent::setUp(array('weixin_router', 'weixin_wangxb', 'example_node'));
+
+    // create node
+    $account = $this->drupalCreateUser(array('access content', 'create example_node content'));
+    $this->drupalLogin($account);
+
+    // Create a new node. The image makes it more complicated, so skip it.
+    $edit = array();
+    $edit['title'] = $this->randomName(8);
+    $edit["body[und][0][value]"] = $this->randomName(16);
+    $this->drupalPost('node/add/example-node', $edit, t('Save'));
   }
 
   public function testCommandSuggestRequestSend() {
@@ -235,9 +245,23 @@ class WeixinWangxbWebTestCase extends DrupalWebTestCase {
 <FromUserName><![CDATA[toUser]]></FromUserName>
 
 <MsgType><![CDATA[text]]></MsgType>
-<Content><![CDATA[[node]: Return node view by node title.]]></Content>
+<Content><![CDATA[[node]: Return node list.]]></Content>
 <FuncFlag>0</FuncFlag>
 </xml>', 'test if event code dosen\'t exist return actions suggest');
+  }
+
+  public function testNodeList() {
+    $xml = '<xml>
+<ToUserName><![CDATA[toUser]]></ToUserName>
+<FromUserName><![CDATA[fromUser]]></FromUserName>
+<CreateTime>1348831860</CreateTime>
+<MsgType><![CDATA[text]]></MsgType>
+<Content><![CDATA[node]]></Content>
+<MsgId>1234567890123456</MsgId>
+</xml>';
+
+    $out = $this->_curlPost($xml);
+    $this->verbose($out);
   }
 
   private function _curlPost($content) {
