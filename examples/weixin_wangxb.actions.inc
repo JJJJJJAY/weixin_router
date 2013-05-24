@@ -64,3 +64,22 @@ class WangxbDefaultAction extends WangxbBaseAction implements WeixinActionInterf
     $this->getResponse()->content = $output;
   }
 }
+
+/**
+ * The Node list Action
+ */
+class WangxbNodeListAction extends WangxbBaseAction {
+  public function execute() {
+    parent::execute();
+    $response = $this->getResponse();
+
+    $query = db_select('node', 'n')->fields('n', array('nid'));
+    $result = $query->execute()->fetchAssoc();
+    if (empty($result)) {
+      return FALSE;
+    }
+    foreach ($result as $nid => $data) {
+      $this->items[] = node_load($nid);
+    }
+  }
+}
