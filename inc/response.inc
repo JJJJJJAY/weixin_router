@@ -67,3 +67,49 @@ class WeixinTextResponse extends WeixinResponse {
       ));
   }
 }
+
+
+/**
+ * The article message response class
+ */
+class WeixinArticleResponse extends WeixinResponse {
+  public $items = array();
+
+  public function build() {
+    $bodyTpl = "<xml>
+<ToUserName><![CDATA[%s]]></ToUserName>
+<FromUserName><![CDATA[%s]]></FromUserName>
+<CreateTime>%s</CreateTime>
+<MsgType><![CDATA[news]]></MsgType>
+<ArticleCount>%s</ArticleCount>
+<Articles>
+%s
+</Articles>
+<FuncFlag>1</FuncFlag>
+</xml>";
+
+    $itemTpl = "<item>
+<Title><![CDATA[%s]]></Title>
+<Description><![CDATA[%s]]></Description>
+<PicUrl><![CDATA[%s]]></PicUrl>
+<Url><![CDATA[%s]]></Url>
+</item>";
+
+    $itemsXml = '';
+    foreach ($this->items as $nid => $item) {
+      $url = url('node/' . $nid);
+      $itemsXml .= sprintf($itemTpl,
+                   $item->title,
+                   $item->body['und'][0]['value'],
+                   '',
+                   $url);
+    }
+
+    $this->setBody(sprintf($bodyTpl,
+        $this->toUserName,
+        $this->fromUserName,
+        REQUEST_TIME,
+        count($this->items),
+        $itemsXml));
+  }
+}
