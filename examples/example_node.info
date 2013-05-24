@@ -1,0 +1,5 @@
+name = Example Node
+description = Provides example_node node type for test.
+package = Weixin
+core = 7.x
+dependencies[] = node

@@ -1,0 +1,94 @@
+<?php
+
+/**
+ * @file
+ * Module file for example_node
+ */
+
+/**
+ * @defgroup example_node Example: Simpletest
+ * @ingroup examples
+ * @{
+ * An example of simpletest tests to accompany the tutorial at
+ * http://drupal.org/node/890654.
+ *
+ * This is built on a traditional node-type implementation.
+ */
+
+/**
+ * Implements hook_node_info().
+ */
+function example_node_node_info() {
+  return array(
+    'example_node' => array(
+      'name' => t('Simpletest Example Node Type'),
+      'base' => 'example_node',
+      'description' => t('example_node page node type.'),
+    )
+  );
+}
+
+function example_node_node_type_insert($content_type) {
+  if ($content_type->type == 'example_node') {
+    $types = node_type_get_types();
+    node_add_body_field($types['example_node']);
+
+    $img_field = array(
+      'field_name' => 'example_node_image',
+      'type'       => 'image',
+      'cardinality' => 1,
+    );
+
+    field_create_field($img_field);
+
+    $img_field_instance = array(
+      'entity_type' => 'node',
+      'bundle' => 'example_node',
+      'field_name'  => 'example_node_image',
+      'label'       => t('Upload an image:'),
+      'required'    => FALSE,
+      'widget' => array(
+        'type'    => 'image_image',
+        'weight'  => 2.10,
+      ),
+    );
+    field_create_instance($img_field_instance);
+  }
+}
+
+/**
+ * Implements hook_form().
+ *
+ * Form for the node type.
+ */
+function example_node_form($node, $form_state) {
+  $type = node_type_get_type($node);
+  $form = array();
+  if ($type->has_title) {
+    $form['title'] = array(
+      '#type' => 'textfield',
+      '#title' => check_plain($type->title_label),
+      '#required' => TRUE,
+      '#default_value' => $node->title,
+      '#maxlength' => 255,
+      '#weight' => -5,
+    );
+  }
+  return $form;
+}
+
+/**
+ * A simple self-contained function used to demonstrate unit tests.
+ *
+ * @see SimpletestUnitTestExampleTestCase
+ */
+function example_node_empty_mysql_date($date_string) {
+  if (empty($date_string) || $date_string == '0000-00-00' || $date_string == '0000-00-00 00:00:00') {
+    return true;
+  }
+  return false;
+}
+
+/**
+ * @} End of "defgroup example_node".
+ */
