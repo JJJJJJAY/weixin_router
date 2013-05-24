@@ -22,12 +22,19 @@ function weixin_wangxb_weixin_router_actions() {
     'description' => 'The event fire when user subscribe my weixin.',
     'type' => WEIXIN_ROUTER_TYPE_EVENT,
   );
+  $actions['node'] = array(
+    'title' => 'Node view',
+    'class' => 'WangxbNodeViewAction',
+    'description' => 'Return node view by node title.',
+    'type' => WEIXIN_ROUTER_TYPE_TEXT,
+  );
   return $actions;
 }
 
 /**
+ * Implements hook_weixin_router_alter()
  * preprocess alter router, set a default action
  */
-function weixin_router_alter(&$router) {
+function weixin_wangxb_weixin_router_alter(&$router) {
   $router->setDefaultAction(new WangxbDefaultAction(WeixinRequest::requestFromPost()));
 }

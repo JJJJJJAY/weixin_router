@@ -142,7 +142,7 @@ class WeixinRouterWebTestCase extends DrupalWebTestCase {
   }
 
   public function setUp() {
-    parent::setUp(array('weixin_router', 'devel', 'weixin_test_actions'));
+    parent::setUp(array('weixin_router', 'weixin_test_actions'));
   }
 
   public function testMixedRequestSend() {
@@ -190,7 +190,54 @@ class WeixinRouterWebTestCase extends DrupalWebTestCase {
 <Content><![CDATA[default content]]></Content>
 <FuncFlag>0</FuncFlag>
 </xml>', 'test if event code not exists return defautl content');
+  }
 
+  private function _curlPost($content) {
+    $curl_options = array();
+    $curl_options[CURLOPT_URL] = url('weixin/router/dispatch', array('absolute' => TRUE));
+    $curl_options[CURLOPT_RETURNTRANSFER] = TRUE;
+    $curl_options[CURLOPT_POST] = TRUE;
+    $curl_options[CURLOPT_POSTFIELDS] = $content;
+    $curl_options[CURLOPT_HTTPHEADER] = array('Content-Type: text/plain');
+
+    return $this->curlExec($curl_options);
+  }
+}
+
+class WeixinWangxbWebTestCase extends DrupalWebTestCase {
+  public static function getInfo() {
+    return array(
+      'name' => 'Weixin wangxb webtest',
+      'description' => 'test weixin wangxb module.',
+      'group' => 'Weixin',
+    );
+  }
+
+  public function setUp() {
+    parent::setUp(array('weixin_router', 'weixin_wangxb'));
+  }
+
+  public function testCommandSuggestRequestSend() {
+    $xml = '<xml>
+<ToUserName><![CDATA[toUser]]></ToUserName>
+<FromUserName><![CDATA[fromUser]]></FromUserName>
+<CreateTime>1348831860</CreateTime>
+<MsgType><![CDATA[text]]></MsgType>
+<Content><![CDATA[some text]]></Content>
+<MsgId>1234567890123456</MsgId>
+</xml>';
+
+    $out = $this->_curlPost($xml);
+    $this->verbose($out);
+    $out = preg_replace('/<CreateTime>\d+<\/CreateTime>/', '', $out);
+    $this->assertEqual($out, '<xml>
+<ToUserName><![CDATA[fromUser]]></ToUserName>
+<FromUserName><![CDATA[toUser]]></FromUserName>
+
+<MsgType><![CDATA[text]]></MsgType>
+<Content><![CDATA[[node]: Return node view by node title.]]></Content>
+<FuncFlag>0</FuncFlag>
+</xml>', 'test if event code dosen\'t exist return actions suggest');
   }
 
   private function _curlPost($content) {
