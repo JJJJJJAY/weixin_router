@@ -72,8 +72,18 @@ class WeixinTextResponse extends WeixinResponse {
 /**
  * The article message response class
  */
-class WeixinArticleResponse extends WeixinResponse {
+abstract class WeixinArticleResponse extends WeixinResponse {
   public $items = array();
+
+  /**
+   * get image uri
+   */
+  abstract public function getImageUri($item);
+
+  /**
+   * get body value
+   */
+  abstract public function getBodyValue($item);
 
   public function build() {
     $bodyTpl = "<xml>
@@ -99,10 +109,14 @@ class WeixinArticleResponse extends WeixinResponse {
 
     foreach ($this->items as $nid => $item) {
       $url = url('node/' . $nid, array('absolute' => TRUE));
+      $image_url = file_create_url($this->getImageUri($item));
+      // $item->example_node_image['und'][0]['uri']
+      $body = $this->getBodyValue($item);
+      // $item->body['und'][0]['value']
       $itemsXml .= sprintf($itemTpl,
                    $item->title,
-                   $item->body['und'][0]['value'],
-                   '',
+                   $body,
+                   $image_url,
                    $url);
     }
 
@@ -112,5 +126,17 @@ class WeixinArticleResponse extends WeixinResponse {
         REQUEST_TIME,
         count($this->items),
         $itemsXml));
+  }
+}
+
+/**
+ * default article response, field name of image is 'image', and field name of body is 'body'
+ */
+class WeixinDefaultArticleResponse extends WeixinArticleResponse {
+  public function getImageUri($item) {
+    return $item->image['und'][0]['uri'];
+  }
+  public function getBodyValue($item) {
+    return $item->body['und'][0]['value'];
   }
 }

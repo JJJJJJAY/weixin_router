@@ -226,23 +226,33 @@ class WeixinWangxbUnitTestCase extends DrupalUnitTestCase {
     ctools_include('response', 'weixin_router', 'inc');
     ctools_include('action', 'weixin_router', 'inc');
     ctools_include('weixin_wangxb.actions', 'weixin_wangxb', '/');
+    ctools_include('weixin_wangxb.response', 'weixin_wangxb', '/');
   }
 
   public function testNodeList() {
 
-    $response = new WeixinArticleResponse();
+    $response = new WeixinDefaultArticleResponse();
     $nid = $this->randomName(2);
     $title = $this->randomName(8);
     $body = $this->randomName(30);
-    $response->items[$nid] = new stdClass();
-    $response->items[$nid]->title = $title;
-    $response->items[$nid]->body['und'][0]['value'] = $body;
+    $image_filename = $this->randomName(10);
+    $image_uri = 'public://' . $image_filename;
+
+    $node = new stdClass();
+    $node->nid = $nid;
+    $node->title = $title;
+    $node->body['und'][0]['value'] = $body;
+    $node->image['und'][0]['uri'] = $image_uri;
+
+    $response->items[$nid] = $node;
 
     $response->build();
     $result = $response->getBody();
+    debug($result);
 
     $this->assertTrue((strpos($result, $title)!==false), 'is result include title');
     $this->assertTrue((strpos($result, $body)!==false), 'is result include body');
+    $this->assertTrue((strpos($result, $image_filename)!==false), 'is result include image url');
   }
 }
 
@@ -269,6 +279,9 @@ class WeixinWangxbWebTestCase extends DrupalWebTestCase {
     $edit = array();
     $edit['title'] = $this->randomName(8);
     $edit["body[und][0][value]"] = $this->randomName(16);
+    $test_image = current($this->drupalGetTestFiles('image'));
+    $edit['files[example_node_image_' . LANGUAGE_NONE . '_0]'] = drupal_realpath($test_image->uri);
+
     $this->drupalPost('node/add/example-node', $edit, t('Save'));
   }
 
