@@ -74,12 +74,14 @@ class WangxbNodeListAction extends WangxbBaseAction {
     $response = $this->getResponse();
 
     $query = db_select('node', 'n')->fields('n', array('nid'));
-    $result = $query->execute()->fetchAssoc();
-    if (empty($result)) {
+    $result = $query->execute();
+
+    if (!$result) {
       return FALSE;
     }
-    foreach ($result as $nid => $data) {
-      $this->items[] = node_load($nid);
+
+    while ($row = $result->fetchAssoc()) {
+      $response->items[$row['nid']] = node_load($row['nid']);
     }
   }
 }

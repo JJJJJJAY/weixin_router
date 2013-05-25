@@ -234,8 +234,9 @@ class WeixinWangxbUnitTestCase extends DrupalUnitTestCase {
     $nid = $this->randomName(2);
     $title = $this->randomName(8);
     $body = $this->randomName(30);
-    $response->items[$nid]['title'] = $title;
-    $response->items[$nid]['body']['und'][0]['value'] = $body;
+    $response->items[$nid] = new stdClass();
+    $response->items[$nid]->title = $title;
+    $response->items[$nid]->body['und'][0]['value'] = $body;
 
     $response->build();
     $result = $response->getBody();
