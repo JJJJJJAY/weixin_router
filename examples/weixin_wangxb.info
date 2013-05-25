@@ -7,3 +7,4 @@ dependencies[] = weixin_router
 
 files[] = weixin_wangxb.module
 files[] = weixin_wangxb.actions.inc
+files[] = weixin_wangxb.response.inc
