@@ -97,10 +97,10 @@ class WeixinArticleResponse extends WeixinResponse {
 
     $itemsXml = '';
     foreach ($this->items as $nid => $item) {
-      $url = url('node/' . $nid);
+      $url = url('node/' . $nid, array('absolute' => TRUE));
       $itemsXml .= sprintf($itemTpl,
-                   $item->title,
-                   $item->body['und'][0]['value'],
+                   $item['title'],
+                   $item['body']['und'][0]['value'],
                    '',
                    $url);
     }

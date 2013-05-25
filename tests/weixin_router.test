@@ -131,6 +131,9 @@ class WeixinRouterUnitTestCase extends DrupalUnitTestCase {
   }
 }
 
+/**
+ * weixin router web test case
+ */
 class WeixinRouterWebTestCase extends DrupalWebTestCase {
 
   public static function getInfo() {
@@ -204,6 +207,47 @@ class WeixinRouterWebTestCase extends DrupalWebTestCase {
   }
 }
 
+/**
+ * weixin wangxb unit test case
+ */
+class WeixinWangxbUnitTestCase extends DrupalUnitTestCase {
+  public static function getInfo() {
+    return array(
+      'name' => 'Weixin wangxb unittest',
+      'description' => 'weixin_wangxb unit test case.',
+      'group' => 'Weixin',
+    );
+  }
+
+  public function setUp() {
+    parent::setUp(array('weixin_router', 'weixin_wangxb', 'ctools'));
+    ctools_include('request', 'weixin_router', 'inc');
+    ctools_include('router', 'weixin_router', 'inc');
+    ctools_include('response', 'weixin_router', 'inc');
+    ctools_include('action', 'weixin_router', 'inc');
+    ctools_include('weixin_wangxb.actions', 'weixin_wangxb', '/');
+  }
+
+  public function testNodeList() {
+
+    $response = new WeixinArticleResponse();
+    $nid = $this->randomName(2);
+    $title = $this->randomName(8);
+    $body = $this->randomName(30);
+    $response->items[$nid]['title'] = $title;
+    $response->items[$nid]['body']['und'][0]['value'] = $body;
+
+    $response->build();
+    $result = $response->getBody();
+
+    $this->assertTrue((strpos($result, $title)!==false), 'is result include title');
+    $this->assertTrue((strpos($result, $body)!==false), 'is result include body');
+  }
+}
+
+/**
+ * weixin wangxb web test case
+ */
 class WeixinWangxbWebTestCase extends DrupalWebTestCase {
   public static function getInfo() {
     return array(
