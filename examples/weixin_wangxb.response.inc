@@ -10,6 +10,6 @@ class WangxbActicleResponse extends WeixinArticleResponse {
     return $item->field_blog_image['und'][0]['uri'];
   }
   public function getBodyValue($item) {
-    return $item->body['und'][0]['uri'];
+    return $item->body['und'][0]['value'];
   }
 }
